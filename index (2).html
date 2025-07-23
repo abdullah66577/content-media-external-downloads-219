@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Hub - Your Style Destination</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font and general layout */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .timer-container {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ef4444; /* Red color for timer */
+            margin-bottom: 30px;
+            padding: 10px 25px;
+            background-color: #fee2e2; /* Lighter red background */
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            position: sticky; /* Make timer sticky at the top */
+            top: 0;
+            z-index: 1000; /* Ensure timer is above other content */
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+            gap: 25px; /* Space between images */
+            margin-top: 30px;
+            justify-items: center; /* Center items in the grid */
+        }
+        .image-item {
+            background-color: #f9fafb; /* Very light gray for image background */
+            border-radius: 12px;
+            overflow: hidden; /* Hide overflow for rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            width: 100%; /* Ensure item takes full grid column width */
+        }
+        .image-item:hover {
+            transform: translateY(-8px); /* Lift effect on hover */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        .image-item img {
+            width: 100%;
+            height: 250px; /* Fixed height for consistent image display */
+            object-fit: cover; /* Cover the area, cropping if necessary */
+            border-radius: 12px 12px 0 0; /* Rounded top corners */
+        }
+        .image-item p {
+            padding: 15px;
+            font-size: 1.1rem;
+            color: #334155; /* Darker text for description */
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Timer Display -->
+    <div id="timer" class="timer-container">02:00</div>
+
+    <div class="container">
+        <h1 class="text-5xl font-extrabold mb-8 text-gray-900 leading-tight">Discover Your Next Look!</h1>
+        <p class="text-xl text-gray-600 mb-12">Explore our curated collection of diverse clothing styles.</p>
+
+        <!-- Image Grid -->
+        <div id="clothingImageGrid" class="image-grid">
+            <!-- Clothing images will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for timer and dynamic image generation
+
+        // --- Timer Logic ---
+        const timerElement = document.getElementById('timer');
+        let timeLeft = 120; // 2 minutes in seconds
+
+        /**
+         * Formats the time in MM:SS format.
+         * @param {number} seconds - The total seconds.
+         * @returns {string} Formatted time string.
+         */
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        }
+
+        /**
+         * Updates the timer display every second.
+         */
+        function updateTimer() {
+            timerElement.textContent = formatTime(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "00:00";
+                timerElement.classList.remove('text-red-500'); // Ensure it's red if it was before
+                timerElement.classList.add('text-gray-400'); // Gray out when time's up
+            }
+            timeLeft--;
+        }
+
+        // Start the timer immediately when the page loads
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Call once immediately to display initial time
+
+
+        // --- Dynamic Clothing Image Generation ---
+        const clothingImageGrid = document.getElementById('clothingImageGrid');
+        const clothingCategories = [
+            "fashion", "apparel", "clothing", "style", "outfit",
+            "dress", "shirt", "pants", "jacket", "shoes", "accessories"
+        ];
+
+        /**
+         * Generates a random placeholder image URL from placehold.co.
+         * @param {number} width - The width of the image.
+         * @param {number} height - The height of the image.
+         * @param {string} category - A hint for the image content.
+         * @returns {string} The URL for the placeholder image.
+         */
+        function generatePlaceholderImageUrl(width, height, category) {
+            const randomColor1 = Math.floor(Math.random()*16777215).toString(16);
+            const randomColor2 = Math.floor(Math.random()*16777215).toString(16);
+            return `https://placehold.co/${width}x${height}/${randomColor1}/${randomColor2}?text=${category.toUpperCase()}`;
+        }
+
+        /**
+         * Generates a random description for a clothing item.
+         * @returns {string} A random clothing description.
+         */
+        function generateRandomDescription() {
+            const descriptions = [
+                "Comfortable and stylish.",
+                "Perfect for any occasion.",
+                "A must-have for your wardrobe.",
+                "Trendy and versatile.",
+                "High quality fabric.",
+                "Modern design.",
+                "Classic look, modern feel.",
+                "Effortlessly chic.",
+                "Durable and fashionable.",
+                "Your new favorite piece."
+            ];
+            return descriptions[Math.floor(Math.random() * descriptions.length)];
+        }
+
+        /**
+         * Populates the grid with a specified number of random clothing images.
+         * @param {number} count - The number of images to generate.
+         */
+        function populateClothingImages(count = 15) { // Generate 15 images
+            for (let i = 0; i < count; i++) {
+                const randomCategory = clothingCategories[Math.floor(Math.random() * clothingCategories.length)];
+                const imageUrl = generatePlaceholderImageUrl(600, 400, randomCategory); // Use larger dimensions for better quality
+                const description = generateRandomDescription();
+
+                const imageItem = document.createElement('div');
+                imageItem.classList.add('image-item');
+
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = `Random ${randomCategory} clothing item`;
+                // Fallback in case image fails to load
+                img.onerror = function() {
+                    this.src = `https://placehold.co/600x400/CCCCCC/000000?text=Image+Error`;
+                    this.alt = "Image failed to load";
+                };
+
+                const p = document.createElement('p');
+                p.textContent = description;
+
+                imageItem.appendChild(img);
+                imageItem.appendChild(p);
+                clothingImageGrid.appendChild(imageItem);
+            }
+        }
+
+        // Populate images when the window loads
+        window.onload = function() {
+            populateClothingImages();
+        };
+
+    </script>
+</body>
+</html>
